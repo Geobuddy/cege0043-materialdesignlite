@@ -1,4 +1,4 @@
-Var client 
+var client 
 
 function trackLocation() {
 if (navigator.geolocation) {
@@ -8,6 +8,8 @@ document.getElementById('showLocation').innerHTML = "Geolocation is not supporte
 }
 }
 function showPosition(position) {
+document.getElementById('showLocation').innerHTML = "Latitude: " + position.coords.latitude +
+"<br>Longitude: " + position.coords.longitude;
 L.marker([position.coords.latitude, position.coords.longitude]).addTo(mymap)
 .bindPopup("<b>You were here</b>");
 }
