@@ -1,5 +1,3 @@
-var client 
-
 function trackLocation() {
 if (navigator.geolocation) {
 navigator.geolocation.watchPosition(showPosition);
@@ -9,5 +7,5 @@ document.getElementById('showLocation').innerHTML = "Geolocation is not supporte
 }
 
 function showPosition(position) {	
-L.marker([position.coords.latitude, position.coords.longitude]).addTo(mymap).bindPopup("<b>You were here</b>").openPopup();
+L.marker([position.coords.latitude, position.coords.longitude]).addTo(mymap).bindPopup("<b>You were here</b>")();
 }
