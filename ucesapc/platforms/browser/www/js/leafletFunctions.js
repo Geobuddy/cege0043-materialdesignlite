@@ -1,52 +1,68 @@
-var client
-
-function addPointLinePoly(argument) {
-	// body...
-			// add a point
-L.marker([51.5, -0.09]).addTo(mymap)
-.bindPopup("<b>Hello world!</b><br />I am a popup.").openPopup();
-// add a circle
-L.circle([51.508, -0.11], 500, {
-color: 'red',
-fillColor: '#f03',
-fillOpacity: 0.5
-}).addTo(mymap).bindPopup("I am a circle.");
-// add a polygon with 3 end points (i.e. a triangle)
-var myPolygon = L.polygon([
-[51.509, -0.08],
-[51.503, -0.06],
-[51.51, -0.047]
-],{
-color: 'red',
-fillColor: '#f03',
-fillOpacity: 0.5
-}).addTo(mymap).bindPopup("I am a polygon.");
-}
-
-// create the code to get the Earthquakes data using an XMLHttpRequest
-function getEarthquakes() {
-client = new XMLHttpRequest();
-client.open('GET','https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson');
-client.onreadystatechange = earthquakeResponse; // note don't use earthquakeResponse() with brackets as that doesn't work
-client.send();
-}
-// create the code to wait for the response from the data server, and process the response once it is received
-function earthquakeResponse() {
-// this function listens out for the server to say that the data is ready - i.e. has state 4
-if (client.readyState == 4) {
-// once the data is ready, process the data
-var earthquakedata = client.responseText;
-loadEarthquakelayer(earthquakedata);
-}
-}
-// define a global variable to hold the layer so that we can use it later on
+var client;
 var earthquakelayer;
-// convert the received data - which is text - to JSON format and add it to the map
-function loadEarthquakelayer(earthquakedata) {
-// convert the text to JSON
-var earthquakejson = JSON.parse(earthquakedata);
-// add the JSON layer onto the map - it will appear using the default icons
-earthquakelayer = L.geoJson(earthquakejson).addTo(mymap);
-// change the map zoom so that all the data is shown
-mymap.fitBounds(earthquakelayer.getBounds());
+var mypoint;
+var mycircle;
+var mypolygon;
+var earthquakes;
+
+function addPointLinePoly(){
+
+    // add a point
+    mypoint = L.marker([51.5,-0.09]).addTo(mymap)
+        .bindPopup("<b>Hello!</b><br/>I am a popup.").openPopup();
+
+    // add a circle
+    mycircle = L.circle([51.5, -0.11], 500, {
+        color: 'red',
+        fillColor: '#f03',
+        fillOpacity:0.5
+    }).addTo(mymap).bindPopup("I am a circle")
+
+    // add a polygon (triangle)
+    mypolygon = L.polygon([
+        [51.509, -0.08],
+        [51.503, -0.06],
+        [51.51, -0.047]
+    ], {
+        color:'red',
+        fillColor: '#f03',
+        fillOpacity: 0.5
+        }
+    ).addTo(mymap).bindPopup("I am a polygon");
+
+
+}
+
+
+function getEarthquakes(){
+    client = new XMLHttpRequest();
+    var url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson";
+    client.open('GET', url);
+    client.onreadystatechange = dataResponse;
+    client.send();
+
+}
+
+function removeLayers(){
+    mymap.removeLayer(earthquakelayer);
+    mymap.removeLayer(mypoint)
+    mymap.removeLayer(mycircle)
+    mymap.removeLayer(mypolygon)
+
+
+}
+
+function dataResponse() {
+    if (client.readyState == 4) {
+        var geoJSONData = client.responseText;
+        console.log('loading data')
+        loadLayer(geoJSONData);
+    }
+}
+
+function loadLayer(geoJSONData){
+    var json = JSON.parse(geoJSONData);
+    earthquakes = json;
+    earthquakelayer = L.geoJson(json).addTo(mymap);
+    mymap.fitBounds(earthquakelayer.getBounds());
 }
